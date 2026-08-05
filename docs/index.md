@@ -97,3 +97,4 @@ This documentation covers all aspects of administering, using, and contributing 
 - [Glossary](appendix/glossary.md)
 - [Appendix](appendix/index.md)
 - [Contributor's Guide](contrib/index.md)
+<- Although, turning off mailing service is possible, it would be a hassle to ask an admin to give you the verification link from their Monica logs when the user has time to create an account. queue test 1.19.0 -->
