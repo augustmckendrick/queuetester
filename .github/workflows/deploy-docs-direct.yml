@@ -2,6 +2,7 @@ name: Deploy Docs Directly
 
 env:
   LATEST_RELEASE_BRANCH: ${{ vars.LATEST_RELEASE_BRANCH }}
+  echo "LATEST_RELEASE_BRANCH: $LATEST_RELEASE_BRANCH"
 
 on:
   push:
