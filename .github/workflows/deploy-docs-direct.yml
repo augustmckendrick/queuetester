@@ -1,7 +1,7 @@
 name: Deploy Docs Directly
 
 env:
-  LATEST_RELEASE_BRANCH: release-v1.19.0
+  LATEST_RELEASE_BRANCH: ${{ vars.LATEST_RELEASE_BRANCH }}
 
 on:
   push:
