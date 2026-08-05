@@ -3,7 +3,7 @@ name: Test Native GitHub Queue
 on:
   push:
     branches:
-      - queue-test
+      - *
 
 permissions:
   contents: read
