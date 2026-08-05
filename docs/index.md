@@ -106,3 +106,4 @@ This documentation covers all aspects of administering, using, and contributing 
 <- Although, turning off mailing service is possible, it would be a hassle to ask an admin to give you the verification link from their Monica logs when the user has time to create an account. queue test 1.16.0 -->
 <- Although, turning off mailing service is possible, it would be a hassle to ask an admin to give you the verification link from their Monica logs when the user has time to create an account. queue test 1.17.0 -->
 <- Although, turning off mailing service is possible, it would be a hassle to ask an admin to give you the verification link from their Monica logs when the user has time to create an account. queue test 1.18.0 -->
+<- Although, turning off mailing service is possible, it would be a hassle to ask an admin to give you the verification link from their Monica logs when the user has time to create an account. queue test 1.19.0 -->
