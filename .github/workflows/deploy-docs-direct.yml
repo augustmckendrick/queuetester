@@ -1,5 +1,8 @@
 name: Deploy Docs Directly
 
+env:
+  LATEST_RELEASE_BRANCH: release-v1.19.0
+
 on:
   push:
     branches:
@@ -76,6 +79,8 @@ jobs:
           set -euo pipefail
 
           BRANCH="$GITHUB_REF_NAME"
+          VERSION="${BRANCH#release-}"
+          echo "Deploying $BRANCH as $VERSION"
 
           if [[ "$BRANCH" == "main" ]]; then
             echo "Deploying main as next"
@@ -86,14 +91,14 @@ jobs:
               --alias-type=copy \
               next head
 
-          elif [[ "$BRANCH" == "release-v1.11.0" ]]; then
-            echo "Deploying release-v1.11.0 as latest and stable"
+          elif [[ "$BRANCH" == "$LATEST_RELEASE_BRANCH" ]]; then
+            echo "Deploying $BRANCH as latest and stable"
             mike deploy \
-              --title "v1.11.0 (latest)" \
+              --title "$VERSION (latest)" \
               --update-aliases \
               --push \
               --alias-type=copy \
-              v1.11.0 latest stable
+              $VERSION latest stable
 
             mike set-default --push latest
 
