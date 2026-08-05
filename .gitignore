@@ -1,0 +1,21 @@
+# Ignore virtual environments
+venv/
+.venv/
+newvenv/
+crdgen/api-docs/
+
+# Ignore extension folders from .vscode
+
+.vscode
+.idea
+
+# Ignore MkDocs build output
+site/
+
+# Ignore Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore macOS-related files
+.DS_Store

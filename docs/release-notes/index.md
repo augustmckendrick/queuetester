@@ -1,0 +1,18 @@
+# {{{ docsVersionInfo.k0rdentName }}} Release Notes
+
+{{{ docsVersionInfo.k0rdentName }}} provides release notes for each official release.
+
+Read the [release notes for {{{ docsVersionInfo.k0rdentName }}} v1.11.0](release-notes-v1.11.0.md).
+
+Previous versions:
+
+- [{{{ docsVersionInfo.k0rdentName }}} v1.10.0](https://docs.k0rdent.io/v1.10.0/release-notes/release-notes-v1.10.0/)
+- [{{{ docsVersionInfo.k0rdentName }}} v1.9.0](https://docs.k0rdent.io/v1.9.0/release-notes/release-notes-v1.9.0/)
+- [{{{ docsVersionInfo.k0rdentName }}} v1.8.0](https://docs.k0rdent.io/v1.8.0/release-notes/release-notes-v1.8.0/)
+- [{{{ docsVersionInfo.k0rdentName }}} v1.7.0](https://docs.k0rdent.io/v1.7.0/release-notes/release-notes-v1.7.0/)
+- [{{{ docsVersionInfo.k0rdentName }}} v1.6.0](https://docs.k0rdent.io/v1.6.0/release-notes/release-notes-v1.6.0/)
+- [{{{ docsVersionInfo.k0rdentName }}} v1.5.0](https://docs.k0rdent.io/v1.5.0/release-notes/release-notes-v1.5.0/)
+- [{{{ docsVersionInfo.k0rdentName }}} v1.4.0](https://docs.k0rdent.io/v1.4.0/release-notes/release-notes-v1.4.0/)
+- [{{{ docsVersionInfo.k0rdentName }}} v1.3.1](https://docs.k0rdent.io/v1.3.1/release-notes/release-notes-v1.3.1/)
+- [{{{ docsVersionInfo.k0rdentName }}} v1.1.0](https://docs.k0rdent.io/v1.1.1/release-notes/release-notes-v1.1.0/)
+- [{{{ docsVersionInfo.k0rdentName }}} v1.0.0](https://docs.k0rdent.io/v1.0.0/release-notes/release-notes-v1.0.0/)
