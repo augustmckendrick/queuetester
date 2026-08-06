@@ -1,0 +1,13 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - "release/**"
+
+jobs:
+  ci:
+    uses: augustmckendrick/queuetester/.github/workflows/deploy-docs-direct.yml@main
+    secrets: inherit
