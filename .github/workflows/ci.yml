@@ -7,6 +7,9 @@ on:
       - main
       - "release/**"
 
+permissions:
+  contents: write
+
 jobs:
   ci:
     uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
