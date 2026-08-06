@@ -36,7 +36,6 @@ jobs:
           fi
 
           echo "Deploying documentation from branch: $BRANCH"
-          echo "LATEST_RELEASE_BRANCH: $LATEST_RELEASE_BRANCH"
 
       - name: Checkout the branch that triggered this run
         uses: actions/checkout@v6
