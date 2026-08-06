@@ -1,8 +1,5 @@
 name: Deploy Docs Directly
 
-env:
-  LATEST_RELEASE_BRANCH: ${{ env.LATEST_RELEASE_BRANCH }}
-
 on:
   push:
     branches:
@@ -24,6 +21,10 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: github-pages
+
+    env:
+      LATEST_RELEASE_BRANCH: ${{ vars.LATEST_RELEASE_BRANCH }}
 
     steps:
       - name: Validate branch name
