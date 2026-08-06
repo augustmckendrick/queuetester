@@ -23,8 +23,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: github-pages
 
-    env:
-      LATEST_RELEASE_BRANCH: ${{ vars.LATEST_RELEASE_BRANCH }}
 
     steps:
       - name: Validate branch name
@@ -83,6 +81,33 @@ jobs:
           BRANCH="$GITHUB_REF_NAME"
           VERSION="${BRANCH#release-}"
           echo "Deploying $BRANCH as $VERSION"
+
+          # Read existing versions.json from gh-pages.
+          git fetch origin gh-pages
+
+          EXISTING_VERSIONS="$(
+            git show origin/gh-pages:versions.json |
+            jq -r '
+              .[]
+              | .version
+              | select(test("^v?[0-9]+\\.[0-9]+\\.[0-9]+$"))
+            '
+          )"
+
+          # Include the version currently being deployed, because it may not
+          # exist in versions.json yet.
+          LATEST_VERSION="$(
+            {
+              printf '%s\n' "$EXISTING_VERSIONS"
+              printf '%s\n' "$VERSION"
+            } |
+            sed '/^$/d' |
+            sort -V |
+            tail -n 1
+          )"
+
+          echo "Current version: $VERSION"
+          echo "Highest version: $LATEST_VERSION"
 
           if [[ "$BRANCH" == "main" ]]; then
             echo "Deploying main as next"
