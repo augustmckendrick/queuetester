@@ -115,7 +115,7 @@ jobs:
               --alias-type=copy \
               next head
 
-          elif [[ "$BRANCH" == "$LATEST_RELEASE_BRANCH" ]]; then
+          elif [[ "$BRANCH" == "release-v$LATEST_VERSION" ]]; then
             echo "Deploying $BRANCH as latest and stable"
             mike deploy \
               --title "$VERSION (latest)" \
