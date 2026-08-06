@@ -1,8 +1,5 @@
 name: Deploy Docs Directly
 
-env:
-  LATEST_RELEASE_BRANCH: ${{ vars.LATEST_RELEASE_BRANCH }}
-
 on:
   push:
     branches:
@@ -82,6 +79,35 @@ jobs:
           VERSION="${BRANCH#release-}"
           echo "Deploying $BRANCH as $VERSION"
 
+          # Read existing versions.json from gh-pages.
+          git fetch origin gh-pages
+
+          EXISTING_VERSIONS="$(
+            git show origin/gh-pages:versions.json |
+            jq -r '
+              .[]
+              | .version
+              | select(test("^v?[0-9]+\\.[0-9]+\\.[0-9]+$"))
+            '
+          )"
+
+          echo "Existing versions: $EXISTING_VERSIONS"
+
+          # Include the version currently being deployed, because it may not
+          # exist in versions.json yet.
+          LATEST_VERSION="$(
+            {
+              printf '%s\n' "$EXISTING_VERSIONS"
+              printf '%s\n' "$VERSION"
+            } |
+            sed '/^$/d' |
+            sort -V |
+            tail -n 1
+          )"
+
+          echo "Current version: $VERSION"
+          echo "Highest version: $LATEST_VERSION"
+
           if [[ "$BRANCH" == "main" ]]; then
             echo "Deploying main as next"
             mike deploy \
@@ -91,7 +117,7 @@ jobs:
               --alias-type=copy \
               next head
 
-          elif [[ "$BRANCH" == "$LATEST_RELEASE_BRANCH" ]]; then
+          elif [[ "$BRANCH" == "release-$LATEST_VERSION" ]]; then
             echo "Deploying $BRANCH as latest and stable"
             mike deploy \
               --title "$VERSION (latest)" \
