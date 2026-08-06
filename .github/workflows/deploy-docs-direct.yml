@@ -91,6 +91,8 @@ jobs:
             '
           )"
 
+          echo "Existing versions: $EXISTING_VERSIONS"
+
           # Include the version currently being deployed, because it may not
           # exist in versions.json yet.
           LATEST_VERSION="$(
@@ -115,7 +117,7 @@ jobs:
               --alias-type=copy \
               next head
 
-          elif [[ "$BRANCH" == "release-v$LATEST_VERSION" ]]; then
+          elif [[ "$BRANCH" == "release-$LATEST_VERSION" ]]; then
             echo "Deploying $BRANCH as latest and stable"
             mike deploy \
               --title "$VERSION (latest)" \
