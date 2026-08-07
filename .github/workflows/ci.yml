@@ -1,0 +1,16 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - "release-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  ci:
+    uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
+    secrets: inherit
