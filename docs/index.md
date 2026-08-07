@@ -60,7 +60,7 @@ There are a few historical names that may show up in the code and in older docs,
   development
 * **motel**: the original repository and codename for KOF
 
-## Quick Start
+## Quick Start  
 
 See the [{{{ docsVersionInfo.k0rdentName }}} Quick Start Guide](quickstarts/index.md) to get started with a small deployment.
 
