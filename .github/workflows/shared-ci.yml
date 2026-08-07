@@ -111,6 +111,10 @@ jobs:
               next head
 
           elif [[ "$BRANCH" == "release-$LATEST_VERSION" ]]; then
+            
+            # Remove old "(latest)" label
+            sed -i 's/ (latest)//g' versions.json
+            
             echo "Deploying $BRANCH as latest and stable"
             mike deploy \
               --title "$VERSION (latest)" \
