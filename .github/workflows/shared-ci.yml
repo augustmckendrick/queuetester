@@ -1,7 +1,13 @@
 name: Shared CI
 
 on:
-  workflow_call:   # this is a shared workflow
+  workflow_call:
+    inputs:
+      branch:
+        description: "Branch whose documentation should be deployed"
+        required: false
+        type: string
+        default: ""
 
 # Only one deployment may modify gh-pages at a time.
 # Additional runs wait in GitHub's native queue.
@@ -16,13 +22,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    # If a branch was explicitly passed by a caller, use it.
+    # Otherwise use the branch that triggered the calling workflow.
+    env:
+      SOURCE_BRANCH: ${{ inputs.branch || github.ref_name }}
+
     steps:
       - name: Validate branch name
         shell: bash
         run: |
           set -euo pipefail
 
-          BRANCH="$GITHUB_REF_NAME"
+          BRANCH="$SOURCE_BRANCH"
 
           if ! [[ "$BRANCH" =~ ^(main|release-v[0-9]+(\.[0-9]+)*)$ ]]; then
             echo "ERROR: '$BRANCH' is not main or a valid release branch."
@@ -31,9 +42,10 @@ jobs:
 
           echo "Deploying documentation from branch: $BRANCH"
 
-      - name: Checkout the branch that triggered this run
+      - name: Checkout source branch
         uses: actions/checkout@v6
         with:
+          ref: ${{ env.SOURCE_BRANCH }}
           fetch-depth: 0
 
       - name: Configure Git identity
@@ -48,7 +60,10 @@ jobs:
           cache: pip
 
       - name: Install dependencies
+        shell: bash
         run: |
+          set -euo pipefail
+
           python -m pip install --upgrade pip
 
           if [[ -f requirements.txt ]]; then
@@ -69,8 +84,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          BRANCH="$GITHUB_REF_NAME"
+          BRANCH="$SOURCE_BRANCH"
           VERSION="${BRANCH#release-}"
+
           echo "Deploying $BRANCH as $VERSION"
 
           # Read existing versions.json from gh-pages.
@@ -88,6 +104,8 @@ jobs:
           echo "Existing versions:"
           printf '%s\n' "$EXISTING_VERSIONS"
 
+          # Include the version currently being deployed because it may
+          # not exist in versions.json yet.
           LATEST_VERSION="$(
             {
               printf '%s\n' "$EXISTING_VERSIONS"
@@ -102,7 +120,9 @@ jobs:
           echo "Highest version: $LATEST_VERSION"
 
           if [[ "$BRANCH" == "main" ]]; then
+
             echo "Deploying main as next"
+
             mike deploy \
               --title "next" \
               --update-aliases \
@@ -111,34 +131,50 @@ jobs:
               next head
 
           elif [[ "$BRANCH" == "release-$LATEST_VERSION" ]]; then
-            
-            echo "Removing old 'latest' label"
+
+            echo "Removing old '(latest)' label"
+
+            # Create a local gh-pages branch from the remote branch.
             git branch -f gh-pages origin/gh-pages
+
+            # Temporarily check out gh-pages in a separate worktree so we
+            # can modify versions.json without replacing the source checkout.
             git worktree add /tmp/gh-pages gh-pages
 
             sed -i 's/ (latest)//g' /tmp/gh-pages/versions.json
 
             cd /tmp/gh-pages
+
             git add versions.json
-            git commit -m "Clear old latest label" || true
-            git push origin gh-pages
+
+            if ! git diff --cached --quiet; then
+              git commit -m "Clear old latest label"
+              git push origin gh-pages
+            else
+              echo "No old '(latest)' label found."
+            fi
 
             cd "$GITHUB_WORKSPACE"
 
+            # Remove the temporary worktree before Mike uses the local
+            # gh-pages branch.
+            git worktree remove /tmp/gh-pages
+
             echo "Deploying $BRANCH as latest and stable"
+
             mike deploy \
               --title "$VERSION (latest)" \
               --update-aliases \
               --push \
               --alias-type=copy \
-              $VERSION latest stable
+              "$VERSION" latest stable
 
             mike set-default --push latest
 
           else
-            VERSION="${BRANCH#release-}"
 
             echo "Deploying $BRANCH as $VERSION"
+
             mike deploy \
               --title "$VERSION" \
               --update-aliases \
@@ -147,7 +183,8 @@ jobs:
           fi
 
       - name: Report completion
+        shell: bash
         run: |
           echo "Deployment completed."
-          echo "Source branch: $GITHUB_REF_NAME"
-          echo "Commit: $GITHUB_SHA" 
+          echo "Source branch: $SOURCE_BRANCH"
+          echo "Commit: $(git rev-parse HEAD)"

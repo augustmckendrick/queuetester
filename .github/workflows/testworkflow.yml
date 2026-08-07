@@ -1,4 +1,4 @@
-name: manual-test-workflow
+name: Rebuild All Release Docs
 
 on:
   workflow_dispatch:
@@ -7,6 +7,53 @@ permissions:
   contents: write
 
 jobs:
-  ci:
-    uses: augustmckendrick/queuetester/.github/workflows/ci.yml@release-v1.16.0
+  find-releases:
+    runs-on: ubuntu-latest
+
+    outputs:
+      branches: ${{ steps.branches.outputs.branches }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Find release branches
+        id: branches
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch origin
+
+          BRANCHES="$(
+            git for-each-ref \
+              --format='%(refname:short)' \
+              'refs/remotes/origin/release-v*' |
+            sed 's#^origin/##' |
+            jq -R -s -c '
+              split("\n")
+              | map(select(length > 0))
+            '
+          )"
+
+          echo "Release branches:"
+          echo "$BRANCHES"
+
+          echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: find-releases
+
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{ fromJSON(needs.find-releases.outputs.branches) }}
+
+    uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
+
+    with:
+      branch: ${{ matrix.branch }}
+
     secrets: inherit
