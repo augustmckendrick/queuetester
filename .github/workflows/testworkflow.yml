@@ -1,0 +1,13 @@
+# .github/workflows/ci.yml
+name: manual-test-workflow
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ci:
+    uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@release-v1.16.0
+    secrets: inherit
