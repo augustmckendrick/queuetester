@@ -112,9 +112,19 @@ jobs:
 
           elif [[ "$BRANCH" == "release-$LATEST_VERSION" ]]; then
             
-            # Remove old "(latest)" label
-            sed -i 's/ (latest)//g' versions.json
-            
+            echo "Removing old 'latest' label"
+            git branch -f gh-pages origin/gh-pages
+            git worktree add /tmp/gh-pages gh-pages
+
+            sed -i 's/ (latest)//g' /tmp/gh-pages/versions.json
+
+            cd /tmp/gh-pages
+            git add versions.json
+            git commit -m "Clear old latest label" || true
+            git push origin gh-pages
+
+            cd "$GITHUB_WORKSPACE"
+
             echo "Deploying $BRANCH as latest and stable"
             mike deploy \
               --title "$VERSION (latest)" \
