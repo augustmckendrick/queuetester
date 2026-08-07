@@ -8,5 +8,5 @@ permissions:
 
 jobs:
   ci:
-    uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@release-v1.16.0
+    uses: augustmckendrick/queuetester/.github/workflows/ci.yml@release-v1.16.0
     secrets: inherit
