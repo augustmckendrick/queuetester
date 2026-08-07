@@ -81,14 +81,13 @@ jobs:
             jq -r '
               .[]
               | .version
-              | select(test("^v?[0-9]+\\.[0-9]+\\.[0-9]+$"))
+              | select(test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))
             '
           )"
 
-          echo "Existing versions: $EXISTING_VERSIONS"
+          echo "Existing versions:"
+          printf '%s\n' "$EXISTING_VERSIONS"
 
-          # Include the version currently being deployed, because it may not
-          # exist in versions.json yet.
           LATEST_VERSION="$(
             {
               printf '%s\n' "$EXISTING_VERSIONS"
