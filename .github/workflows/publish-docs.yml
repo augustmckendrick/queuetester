@@ -10,9 +10,16 @@ env:
   DOCS_ROOT: /home/ubuntu/docshome/
 
 jobs:
+
   deploy:
     runs-on: ubuntu-latest
     steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+        
     - name: SSH into the server
       run: |
         mkdir -p ~/.ssh
