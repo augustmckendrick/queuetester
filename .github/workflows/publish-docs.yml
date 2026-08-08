@@ -19,7 +19,7 @@ jobs:
       uses: actions/checkout@v6
       with:
         fetch-depth: 0
-        
+
     - name: SSH into the server
       run: |
         mkdir -p ~/.ssh
@@ -31,7 +31,7 @@ jobs:
         git worktree add /tmp/gh-pages origin/gh-pages
 
         rsync -rv --delete \
-          -e "ssh ${SSH_OPTS[*]} -i ~/.ssh/docs_key.pem" \
+          -e "ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=6 -i ~/.ssh/docs_key.pem" \
           /tmp/gh-pages/ \
           "${DOCS_USER}@${DOCS_HOST}:${DOCS_ROOT}/"
 
