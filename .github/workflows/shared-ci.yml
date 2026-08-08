@@ -252,10 +252,7 @@ jobs:
 
   publish:
     needs: deploy
-
     uses: augustmckendrick/queuetester/.github/workflows/publish-docs.yml@main
-
     with:
       branch: ${{ inputs.branch || github.ref_name }}
-
     secrets: inherit
