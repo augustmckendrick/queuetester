@@ -2,7 +2,20 @@ name: Publish Docs To External Server
 
 on:
   workflow_call:
+    inputs:
+      branch:
+        description: "Optional source branch to publish. Leave blank to publish all gh-pages content."
+        required: false
+        type: string
+        default: ""
+
   workflow_dispatch:
+    inputs:
+      branch:
+        description: "Optional source branch to publish. Leave blank to publish all gh-pages content."
+        required: false
+        type: string
+        default: ""
 
 env:
   DOCS_HOST: ec2-16-52-70-117.ca-central-1.compute.amazonaws.com
@@ -10,30 +23,67 @@ env:
   DOCS_ROOT: /home/ubuntu/docshome/
 
 jobs:
-
   deploy:
     runs-on: ubuntu-latest
+
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
-    - name: Checkout repository
-      uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
+      - name: Publish documentation
+        shell: bash
+        run: |
+          set -euo pipefail
 
-    - name: SSH into the server
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.DOCS_SSH_KEY }}" > ~/.ssh/docs_key.pem
-        chmod 600 ~/.ssh/docs_key.pem
-        ssh-keyscan -H ${DOCS_HOST} >> ~/.ssh/known_hosts
+          BRANCH="${{ inputs.branch }}"
 
-        git fetch origin gh-pages
-        git worktree add /tmp/gh-pages origin/gh-pages
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DOCS_SSH_KEY }}" > ~/.ssh/docs_key.pem
+          chmod 600 ~/.ssh/docs_key.pem
+          ssh-keyscan -H "$DOCS_HOST" >> ~/.ssh/known_hosts
 
-        rsync -rv --delete \
-          -e "ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=6 -i ~/.ssh/docs_key.pem" \
-          /tmp/gh-pages/ \
-          "${DOCS_USER}@${DOCS_HOST}:${DOCS_ROOT}/"
+          git fetch origin gh-pages
+          git worktree add /tmp/gh-pages origin/gh-pages
 
-        git worktree prune
-        git worktree remove /tmp/gh-pages
+          SSH_COMMAND="ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=6 -i ~/.ssh/docs_key.pem"
+
+          if [[ -z "$BRANCH" ]]; then
+            echo "No branch specified. Publishing all gh-pages content."
+
+            rsync -rv --delete \
+              -e "$SSH_COMMAND" \
+              /tmp/gh-pages/ \
+              "${DOCS_USER}@${DOCS_HOST}:${DOCS_ROOT}/"
+
+          elif [[ "$BRANCH" == "main" ]]; then
+            echo "Publishing main documentation."
+
+            rsync -rv --delete \
+              -e "$SSH_COMMAND" \
+              /tmp/gh-pages/next/ \
+              "${DOCS_USER}@${DOCS_HOST}:${DOCS_ROOT}next/"
+
+            rsync -rv --delete \
+              -e "$SSH_COMMAND" \
+              /tmp/gh-pages/head/ \
+              "${DOCS_USER}@${DOCS_HOST}:${DOCS_ROOT}head/"
+
+          elif [[ "$BRANCH" =~ ^release-v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            VERSION="${BRANCH#release-}"
+
+            echo "Publishing $BRANCH as $VERSION"
+
+            rsync -rv --delete \
+              -e "$SSH_COMMAND" \
+              "/tmp/gh-pages/${VERSION}/" \
+              "${DOCS_USER}@${DOCS_HOST}:${DOCS_ROOT}${VERSION}/"
+
+          else
+            echo "ERROR: Invalid branch '$BRANCH'"
+            exit 1
+          fi
+
+          git worktree remove /tmp/gh-pages
+          git worktree prune
