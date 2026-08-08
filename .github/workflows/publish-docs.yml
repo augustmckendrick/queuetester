@@ -8,4 +8,4 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "${{ secrets.DOCS_SSH_KEYmissing }}"
+      - run: echo "${{ secrets.DOCS_SSH_KEY }}"
