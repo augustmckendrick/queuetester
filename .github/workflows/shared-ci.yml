@@ -238,11 +238,6 @@ jobs:
               "$VERSION"
           fi
 
-      - name: Publish docs to external server
-        uses: ./.github/workflows/publish-docs.yml
-        with:
-          branch: ${{ env.SOURCE_BRANCH }}
-
       - name: Report completion
         shell: bash
         run: |
