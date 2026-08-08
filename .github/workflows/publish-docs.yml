@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCS_HOST: ec2-15-222-64-209.ca-central-1.compute.amazonaws.com
+  DOCS_HOST: ec2-16-52-70-117.ca-central-1.compute.amazonaws.com
   DOCS_USER: ubuntu
   DOCS_ROOT: /home/ubuntu/docshome/
 
