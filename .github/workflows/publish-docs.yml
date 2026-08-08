@@ -8,4 +8,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "${{ secrets.DOCS_SSH_KEY }}"
+    - name: SSH into the server
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DOCS_SSH_KEY }}" > ~/.ssh/docs_key.pem
+        chmod 600 ~/.ssh/docs_key.pem
+        ssh-keyscan -H ec2-15-222-64-209.ca-central-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+        ssh -i ~/.ssh/docs_key.pem ubuntu@ec2-15-222-64-209.ca-central-1.compute.amazonaws.com "touch kilroywashere.txt"
