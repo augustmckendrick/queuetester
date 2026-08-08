@@ -4,6 +4,11 @@ on:
   workflow_call:
   workflow_dispatch:
 
+env:
+  DOCS_HOST: ec2-15-222-64-209.ca-central-1.compute.amazonaws.com
+  DOCS_USER: ubuntu
+  DOCS_ROOT: /home/ubuntu/docshome/
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -13,5 +18,15 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.DOCS_SSH_KEY }}" > ~/.ssh/docs_key.pem
         chmod 600 ~/.ssh/docs_key.pem
-        ssh-keyscan -H ec2-15-222-64-209.ca-central-1.compute.amazonaws.com >> ~/.ssh/known_hosts
-        ssh -i ~/.ssh/docs_key.pem ubuntu@ec2-15-222-64-209.ca-central-1.compute.amazonaws.com "touch kilroywashere.txt"
+        ssh-keyscan -H ${DOCS_HOST} >> ~/.ssh/known_hosts
+
+        git fetch origin gh-pages
+        git worktree add /tmp/gh-pages origin/gh-pages
+
+        rsync -rv --delete \
+          -e "ssh ${SSH_OPTS[*]} -i ~/.ssh/docs_key.pem" \
+          /tmp/gh-pages/ \
+          "${DOCS_USER}@${DOCS_HOST}:${DOCS_ROOT}/"
+
+        git worktree prune
+        git worktree remove /tmp/gh-pages
