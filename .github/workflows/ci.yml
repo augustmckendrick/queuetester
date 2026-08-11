@@ -1,4 +1,7 @@
 # .github/workflows/ci.yml
+
+# This workflow exists in all release branches and calls the actual CI workflow that lives in the 
+# main branch. This enables us to manage the actual CI workflow in one place.
 name: CI
 
 on:
