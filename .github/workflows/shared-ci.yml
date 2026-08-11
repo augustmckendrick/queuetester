@@ -16,7 +16,10 @@ concurrency:
   queue: max
 
 permissions:
-  contents: write
+  contents: read, write
+  pages: write
+  id-token: write
+  actions: read
 
 jobs:
   deploy:
