@@ -1,4 +1,4 @@
-# .github/workflows/ci-caller.yml 
+# .github/workflows/ci-caller.yml
 
 # This workflow exists in all release branches and calls the actual CI workflow that lives in the 
 # main branch. This enables us to manage the actual CI workflow in one place.
@@ -12,6 +12,9 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
+  actions: read
 
 jobs:
   ci:
