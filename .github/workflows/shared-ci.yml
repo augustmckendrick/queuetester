@@ -79,89 +79,24 @@ jobs:
           mike --version
           mkdocs --version
 
-      - name: Prepare gh-pages
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          # Ensure the gh-pages branch exists.
-          if git fetch origin gh-pages 2>/dev/null; then
-            echo "Found existing gh-pages branch."
-            git branch -f gh-pages origin/gh-pages
-          else
-            echo "gh-pages does not exist. Creating it."
-
-            git worktree add --detach /tmp/gh-pages-init
-            cd /tmp/gh-pages-init
-
-            git checkout --orphan gh-pages
-
-            # Remove files inherited from the source checkout.
-            git rm -rf . >/dev/null 2>&1 || true
-
-            printf '[]\n' > versions.json
-
-            git add versions.json
-            git commit -m "Initialize gh-pages"
-            git push origin gh-pages
-
-            cd "$GITHUB_WORKSPACE"
-            git worktree remove /tmp/gh-pages-init
-
-            git fetch origin gh-pages
-            git branch -f gh-pages origin/gh-pages
-          fi
-
-          # Ensure versions.json exists and contains valid JSON.
-          if ! git show gh-pages:versions.json 2>/dev/null | jq empty 2>/dev/null; then
-            echo "versions.json is missing or invalid. Initializing it."
-
-            git worktree add /tmp/gh-pages-init gh-pages
-
-            printf '[]\n' > /tmp/gh-pages-init/versions.json
-
-            cd /tmp/gh-pages-init
-
-            git add versions.json
-
-            if ! git diff --cached --quiet; then
-              git commit -m "Initialize versions.json"
-              git push origin gh-pages
-            fi
-
-            cd "$GITHUB_WORKSPACE"
-            git worktree remove /tmp/gh-pages-init
-
-            git fetch origin gh-pages
-            git branch -f gh-pages origin/gh-pages
-          fi
-
       - name: Deploy documentation
         shell: bash
         run: |
           set -euo pipefail
 
           BRANCH="$SOURCE_BRANCH"
-
-          # main is not a release version.
-          if [[ "$BRANCH" == "main" ]]; then
-            echo "Deploying main as next"
-
-            mike deploy \
-              --title "next" \
-              --update-aliases \
-              --push \
-              --alias-type=copy \
-              next head
-
-            exit 0
-          fi
-
-          # Everything below here is a release branch.
           VERSION="${BRANCH#release-}"
 
           echo "Deploying release branch: $BRANCH"
           echo "Release version: $VERSION"
+
+          echo "Deploying $BRANCH as $VERSION"
+
+          mike deploy \
+            --title "$VERSION" \
+            --update-aliases \
+            --push \
+            "$VERSION"
 
           EXISTING_VERSIONS="$(
             git show gh-pages:versions.json |
@@ -175,12 +110,9 @@ jobs:
           echo "Existing versions:"
           printf '%s\n' "$EXISTING_VERSIONS"
 
-          # Include the version currently being deployed because it may
-          # not exist in versions.json yet.
           LATEST_VERSION="$(
             {
               printf '%s\n' "$EXISTING_VERSIONS"
-              printf '%s\n' "$VERSION"
             } |
             sed '/^$/d' |
             sort -V |
@@ -227,15 +159,6 @@ jobs:
 
             mike set-default --push latest
 
-          else
-
-            echo "Deploying $BRANCH as $VERSION"
-
-            mike deploy \
-              --title "$VERSION" \
-              --update-aliases \
-              --push \
-              "$VERSION"
           fi
 
       - name: Report completion
