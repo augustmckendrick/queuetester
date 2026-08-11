@@ -37,8 +37,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          BRANCH="${{ inputs.branch }}"
-
           mkdir -p ~/.ssh
           echo "${{ secrets.DOCS_SSH_KEY }}" > ~/.ssh/docs_key.pem
           chmod 600 ~/.ssh/docs_key.pem
@@ -49,41 +47,10 @@ jobs:
 
           SSH_COMMAND="ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=6 -i ~/.ssh/docs_key.pem"
 
-          if [[ -z "$BRANCH" ]]; then
-            echo "No branch specified. Publishing all gh-pages content."
-
-            rsync -rv --delete \
-              -e "$SSH_COMMAND" \
-              /tmp/gh-pages/ \
-              "${DOCS_USER}@${DOCS_HOST}:${DOCS_ROOT}/"
-
-          elif [[ "$BRANCH" == "main" ]]; then
-            echo "Publishing main documentation."
-
-            rsync -rv --delete \
-              -e "$SSH_COMMAND" \
-              /tmp/gh-pages/next/ \
-              "${DOCS_USER}@${DOCS_HOST}:${DOCS_ROOT}next/"
-
-            rsync -rv --delete \
-              -e "$SSH_COMMAND" \
-              /tmp/gh-pages/head/ \
-              "${DOCS_USER}@${DOCS_HOST}:${DOCS_ROOT}head/"
-
-          elif [[ "$BRANCH" =~ ^release-v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            VERSION="${BRANCH#release-}"
-
-            echo "Publishing $BRANCH as $VERSION"
-
-            rsync -rv --delete \
-              -e "$SSH_COMMAND" \
-              "/tmp/gh-pages/${VERSION}/" \
-              "${DOCS_USER}@${DOCS_HOST}:${DOCS_ROOT}${VERSION}/"
-
-          else
-            echo "ERROR: Invalid branch '$BRANCH'"
-            exit 1
-          fi
+          rsync -rv --delete \
+            -e "$SSH_COMMAND" \
+            /tmp/gh-pages/ \
+            "${DOCS_USER}@${DOCS_HOST}:${DOCS_ROOT}/"
 
           git worktree remove /tmp/gh-pages
           git worktree prune
