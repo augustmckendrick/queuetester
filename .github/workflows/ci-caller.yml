@@ -1,0 +1,22 @@
+# .github/workflows/ci-caller.yml
+
+# This workflow exists in all release branches and calls the actual CI workflow that lives in the 
+# main branch. This enables us to manage the actual CI workflow in one place.
+name: CI Caller
+
+on:
+  push:
+    branches:
+      - main
+      - "release-v*"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  actions: read
+
+jobs:
+  ci:
+    uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
+    secrets: inherit
