@@ -164,11 +164,15 @@ jobs:
       - name: Report completion
         shell: bash
         run: |
-          echo "Deployment completed."
+          echo "Mike processing completed."
           echo "Source branch: $SOURCE_BRANCH"
           echo "Commit: $(git rev-parse HEAD)"
 
-  publish:
+  publish-to-pages:
+    needs: deploy
+    uses: augustmckendrick/queuetester/.github/workflows/deploy-pages.yml@main
+
+  publish-to-external:
     needs: deploy
     uses: augustmckendrick/queuetester/.github/workflows/publish-docs.yml@main
     with:
