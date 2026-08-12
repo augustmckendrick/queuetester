@@ -60,3 +60,13 @@ jobs:
       branch: ${{ matrix.branch }}
 
     secrets: inherit
+
+  publish-to-pages:
+    needs: deploy
+    uses: augustmckendrick/queuetester/.github/workflows/deploy-pages.yml@main
+    secrets: inherit
+
+  publish-to-external:
+    needs: deploy
+    uses: augustmckendrick/queuetester/.github/workflows/publish-docs.yml@main
+    secrets: inherit
