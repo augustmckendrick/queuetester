@@ -6,7 +6,7 @@ The home of the consolidated documentation for k0rdent sponsored by Mirantis.
 
 This project utilises Mkdocs with the Material theme and Mermaid for
 diagrams. Currently the docs are published using github actions on github pages
-from the branch gh-pages.
+from the branch gh-pages. 
 
 Development is tracked under [k0rdent](https://github.com/orgs/k0rdent/projects/4) on github.
 
