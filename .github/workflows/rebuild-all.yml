@@ -1,4 +1,4 @@
-name: Rebuild All Release Docs
+name: Rebuild All Release Docs to gh-pages
 
 on:
   workflow_dispatch:

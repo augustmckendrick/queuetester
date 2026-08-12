@@ -1,5 +1,5 @@
 # .github/workflows/deploy-pages.yml
-name: Deploy GitHub Pages
+name: Deploy gh-pages to GitHub Pages
 
 # This script replaces the automatic deployment of gh-pages Github normally does but
 # we have turned it off to prevent conflicts.
