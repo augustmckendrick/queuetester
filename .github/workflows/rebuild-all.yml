@@ -9,7 +9,7 @@
 # themselves via shared-ci's `docs-deployment` concurrency group, which also
 # keeps them from colliding with a push-triggered run.
 name: Rebuild All Docs to gh-pages
- 
+  
 on:
   workflow_dispatch:
 
