@@ -99,7 +99,7 @@ jobs:
       # If you change the accepted names here, also update the "== main" test in
       # the deploy step further down - both have to agree on what main is.
       # ------------------------------------------------------------------
-      - name: Validate branch name
+      - name: Validate branch name 
         shell: bash
         run: |
           set -euo pipefail
