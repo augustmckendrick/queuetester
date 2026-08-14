@@ -30,7 +30,7 @@ theme:
         name: Switch to dark mode
   features:
     - toc.autohide
-    - search.suggest
+    - search.suggest 
     - search.highlight
     - content.code.copy
     - navigation.tracking   # Anchor tracking
