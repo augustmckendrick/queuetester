@@ -13,7 +13,7 @@ The project is based on the premise that:
 The goal of the {{{ docsVersionInfo.k0rdentName }}} project is to provide platform engineers with the means
 to deliver a distributed container management environment (DCME) and enable them to
 compose unique internal developer platforms (IDP) to support a diverse range
-of complex modern application workloads.
+of complex modern application workloads. 
 
 Another way to think of {{{ docsVersionInfo.k0rdentName }}} is as a "super control plane" designed to ensure the
 consistent provisioning and lifecycle management of kubernetes clusters and the
