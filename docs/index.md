@@ -5,7 +5,7 @@
 at massive scale leveraging kubernetes.
 
 The project is based on the premise that:
-
+ 
 * Kubernetes and its ecosystem are mature and inherently stable.
 * Large scale adoption of Kubernetes means that {{{ docsVersionInfo.k0rdentName }}} can run anywhere.
 * Community standards and open source projects ensure support and reduce adoption risk.
