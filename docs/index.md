@@ -90,7 +90,7 @@ located in the [main k0rdent repository](https://github.com/k0rdent/kcm/blob/mai
 This documentation covers all aspects of administering, using, and contributing to {{{ docsVersionInfo.k0rdentName }}}, including: 
 
 - [{{{ docsVersionInfo.k0rdentName }}} concepts](concepts/index.md)
-- [QuickStarts](quickstarts/index.md)
+- [QuickStarts](quickstarts/index.md) 
 - [Administrator Guide](admin/index.md) 
 - [User Guide](user/index.md)
 - [{{{ docsVersionInfo.k0rdentName }}} Templates Reference](reference/template/index.md)
