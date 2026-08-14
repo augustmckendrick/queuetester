@@ -19,7 +19,7 @@ Another way to think of {{{ docsVersionInfo.k0rdentName }}} is as a "super contr
 consistent provisioning and lifecycle management of kubernetes clusters and the
 services that make them useful.
 
-In short:
+In short: 
 Kubernetes clusters at scale, managed centrally, template driven, based on open
 community driven standards, enabling Golden Paths ... {{{ docsVersionInfo.k0rdentName }}} aspires to do all of that.
 
@@ -97,4 +97,3 @@ This documentation covers all aspects of administering, using, and contributing 
 - [Glossary](appendix/glossary.md)
 - [Appendix](appendix/index.md)
 - [Contributor's Guide](contrib/index.md)
-<- Although, turning off mailing service is possible, it would be a hassle to ask an admin to give you the verification link from their Monica logs when the user has time to create an account. queue test 1.15.0 -->
