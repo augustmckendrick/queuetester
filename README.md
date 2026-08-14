@@ -1,5 +1,5 @@
 # k0rdent Documentation
-
+ 
 The home of the consolidated documentation for k0rdent sponsored by Mirantis.
 
 [k0rdent Docs](https://k0rdent.github.io/docs)
