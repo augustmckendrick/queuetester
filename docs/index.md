@@ -19,7 +19,7 @@ Another way to think of {{{ docsVersionInfo.k0rdentName }}} is as a "super contr
 consistent provisioning and lifecycle management of kubernetes clusters and the
 services that make them useful.
 
-In short:
+In short: 
 Kubernetes clusters at scale, managed centrally, template driven, based on open
 community driven standards, enabling Golden Paths ... {{{ docsVersionInfo.k0rdentName }}} aspires to do all of that.
 
