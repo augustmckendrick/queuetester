@@ -87,7 +87,7 @@ located in the [main k0rdent repository](https://github.com/k0rdent/kcm/blob/mai
 
 ## Where to go from here
 
-This documentation covers all aspects of administering, using, and contributing to {{{ docsVersionInfo.k0rdentName }}}, including:
+This documentation covers all aspects of administering, using, and contributing to {{{ docsVersionInfo.k0rdentName }}}, including: 
 
 - [{{{ docsVersionInfo.k0rdentName }}} concepts](concepts/index.md)
 - [QuickStarts](quickstarts/index.md)
