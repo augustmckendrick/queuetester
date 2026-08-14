@@ -1,7 +1,7 @@
 # Welcome to the {{{ docsVersionInfo.k0rdentName }}} documentation
 
 ## Introductions
-
+ 
 {{{ docsVersionInfo.k0rdentName }}} has been developed to provide a way to manage distributed infrastructure
 at massive scale leveraging kubernetes.
 
@@ -87,7 +87,7 @@ located in the [main k0rdent repository](https://github.com/k0rdent/kcm/blob/mai
 
 ## Where to go from here
 
-This documentation covers all aspects of administering, using, and contributing to {{{ docsVersionInfo.k0rdentName }}}, including:
+This documentation covers all aspects of administering, using, and contributing to {{{ docsVersionInfo.k0rdentName }}}, including: 
 
 - [{{{ docsVersionInfo.k0rdentName }}} concepts](concepts/index.md)
 - [QuickStarts](quickstarts/index.md)
@@ -98,4 +98,3 @@ This documentation covers all aspects of administering, using, and contributing 
 - [Glossary](appendix/glossary.md)
 - [Appendix](appendix/index.md)
 - [Contributor's Guide](contrib/index.md)
-<- Although, turning off mailing service is possible, it would be a hassle to ask an admin to give you the verification link from their Monica logs when the user has time to create an account. queue test 1.14.0 -->
