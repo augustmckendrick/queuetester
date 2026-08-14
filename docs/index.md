@@ -94,7 +94,7 @@ This documentation covers all aspects of administering, using, and contributing 
 - [User Guide](user/index.md)
 - [{{{ docsVersionInfo.k0rdentName }}} Templates Reference](reference/template/index.md)
 - [Troubleshooting](troubleshooting/index.md)
-- [Glossary](appendix/glossary.md)
+- [Glossary](appendix/glossary.md) 
 - [Appendix](appendix/index.md)
 - [Contributor's Guide](contrib/index.md)
  
