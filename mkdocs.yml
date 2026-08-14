@@ -14,7 +14,7 @@ theme:
   name: "material"
   highlightjs: true
   language: "en"
-  custom_dir: docs/custom_theme
+  custom_dir: docs/custom_theme 
 
   favicon: img/k0rdent-logo-mark-inverted.svg
   logo: img/k0rdent-logo-horizontal-inverted.svg
