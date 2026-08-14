@@ -19,7 +19,7 @@ theme:
   favicon: img/k0rdent-logo-mark-inverted.svg
   logo: img/k0rdent-logo-horizontal-inverted.svg
 
-  palette:
+  palette: 
     - scheme: default
       toggle:
         icon: material/toggle-switch
