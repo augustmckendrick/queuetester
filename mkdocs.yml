@@ -28,7 +28,7 @@ theme:
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to dark mode
-  features:
+  features: 
     - toc.autohide
     - search.suggest
     - search.highlight
