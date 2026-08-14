@@ -32,7 +32,7 @@ theme:
     - toc.autohide
     - search.suggest
     - search.highlight
-    - content.code.copy
+    - content.code.copy 
     - navigation.tracking   # Anchor tracking
     - toc.follow            # Sidebar is automatically scrolled so that the active anchor is always visible
     - search.suggest        # Search suggestions
