@@ -228,6 +228,9 @@ jobs:
             echo "Deploying $SOURCE_BRANCH as next"
 
             mike deploy --push next
+                        
+            # Wait 10 seconds to give github a chance to deploy to Pages
+            sleep 10
 
             exit 0
 
@@ -338,6 +341,9 @@ jobs:
             # redirect already points at latest and mike makes no commit.
             mike set-default --push latest
 
+            # Wait 10 seconds to give github a chance to deploy to Pages
+            sleep 10            
+
           else
 
             # --------------------------------------------------------------
@@ -350,6 +356,9 @@ jobs:
             echo "$VERSION is not the highest version; deploying without aliases"
 
             mike deploy --push "$VERSION"
+
+            # Wait 10 seconds to give github a chance to deploy to Pages
+            sleep 10
 
           fi
 
