@@ -11,7 +11,7 @@ copyright:
   Copyright &copy; 2025 The k0rdent authors | Documentation distributed under <a href="https://creativecommons.org/licenses/by/4.0/legalcode.txt">CC-BY-4.0</a>.
 
 theme:
-  name: "material"
+  name: "material" 
   highlightjs: true
   language: "en"
   custom_dir: docs/custom_theme 
