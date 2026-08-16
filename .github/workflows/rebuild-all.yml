@@ -1,69 +1,72 @@
-# .github/workflows/rebuild-all.yml
-
-# Manual full rebuild. Collects main plus every release-v* branch and pushes each
-# one through the same shared CI that a normal branch push would use.
-#
-# Order does not matter: shared-ci decides 'latest' from
-# max(published versions + the one being built), so a leg for an older release
-# never steals the aliases regardless of when it runs. The legs serialize
-# themselves via shared-ci's `docs-deployment` concurrency group, which also
-# keeps them from colliding with a push-triggered run.
-name: Rebuild All Docs to gh-pages
+name: Rebuild All Release Docs to gh-pages
 
 on:
   workflow_dispatch:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
+  actions: read
 
 jobs:
-  find-branches:
+  find-releases:
     runs-on: ubuntu-latest
 
     outputs:
       branches: ${{ steps.branches.outputs.branches }}
 
     steps:
-      # A shallow checkout is enough; ls-remote queries the remote directly and
-      # actions/checkout has already configured credentials for origin.
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
-      - name: Collect buildable branches
+      - name: Find release branches
         id: branches
         shell: bash
         run: |
           set -euo pipefail
 
-          # Deliberately a loose glob. A malformed name like release-v-whoa-baby
-          # is collected here and then fails its own leg loudly in shared-ci,
-          # rather than being silently dropped from a full rebuild.
+          git fetch origin
+
           BRANCHES="$(
-            {
-              echo main
-              git ls-remote --heads origin 'release-v*' | sed 's#.*refs/heads/##'
-            } |
-            sed '/^$/d' |
+            git for-each-ref \
+              --format='%(refname:short)' \
+              'refs/remotes/origin/release-v*' |
+            sed 's#^origin/##' |
             jq -R -s -c '
               split("\n")
               | map(select(length > 0))
             '
           )"
 
-          echo "Rebuilding: $BRANCHES"
+          echo "Release branches:"
+          echo "$BRANCHES"
 
           echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
 
   deploy:
-    needs: find-branches
+    needs: find-releases
 
     strategy:
-      # One bad branch fails its own leg without stopping the rest.
       fail-fast: false
       matrix:
-        branch: ${{ fromJSON(needs.find-branches.outputs.branches) }}
+        branch: ${{ fromJSON(needs.find-releases.outputs.branches) }}
 
-    uses: jjainschigg-r/queuetester/.github/workflows/shared-ci.yml@main
+    uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
 
     with:
       branch: ${{ matrix.branch }}
+
+    secrets: inherit
+
+  publish-to-pages:
+    needs: deploy
+    uses: augustmckendrick/queuetester/.github/workflows/deploy-pages.yml@main
+    secrets: inherit
+
+  publish-to-external:
+    needs: deploy
+    uses: augustmckendrick/queuetester/.github/workflows/publish-docs.yml@main
+    secrets: inherit
