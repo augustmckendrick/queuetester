@@ -9,12 +9,6 @@ on:
         type: string
         default: ""
 
-# Only one deployment may modify gh-pages at a time.
-# Additional runs wait in GitHub's native queue.
-concurrency:
-  group: docs-deployment
-  queue: max
-
 permissions:
   contents: write
   pages: write
