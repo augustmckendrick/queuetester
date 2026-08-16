@@ -10,15 +10,18 @@ on:
       - main
       - "release-v*"
 
-# Ceiling for the called workflow's GITHUB_TOKEN. `contents: write` is what lets
-# mike push to gh-pages; everything else drops to `none` implicitly.
 permissions:
   contents: write
+  pages: write
+  id-token: write
+  actions: read
 
 jobs:
   ci:
-    uses: jjainschigg-r/queuetester/.github/workflows/shared-ci.yml@main
-    with:
-      # The branch that triggered this run. Identical text in every branch,
-      # so this file still needs no per-branch maintenance.
-      branch: ${{ github.ref_name }}
+    uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
+    secrets: inherit
+
+  publish-to-pages:
+    needs: ci
+    uses: augustmckendrick/queuetester/.github/workflows/deploy-pages.yml@main
+    secrets: inherit

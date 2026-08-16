@@ -95,5 +95,6 @@ This documentation covers all aspects of administering, using, and contributing 
 - [{{{ docsVersionInfo.k0rdentName }}} Templates Reference](reference/template/index.md)
 - [Troubleshooting](troubleshooting/index.md)
 - [Glossary](appendix/glossary.md)
-- [Appendix](appendix/index.md)
+- [Appendix](appendix/index.md) 
 - [Contributor's Guide](contrib/index.md)
+ 
