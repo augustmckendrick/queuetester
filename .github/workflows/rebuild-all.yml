@@ -56,9 +56,9 @@ jobs:
 
     strategy:
       fail-fast: false
-        max-parallel: 1
-        matrix:
-          branch: ${{ fromJSON(needs.find-releases.outputs.branches) }}
+      max-parallel: 1
+      matrix:
+        branch: ${{ fromJSON(needs.find-releases.outputs.branches) }}
 
     uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
 
