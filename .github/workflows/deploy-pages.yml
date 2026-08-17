@@ -14,10 +14,6 @@ permissions:
   id-token: write
   actions: read
 
-concurrency:
-  group: pages
-  queue: max
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
