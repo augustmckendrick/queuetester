@@ -82,7 +82,11 @@ jobs:
           set -euo pipefail
 
           BRANCH="$SOURCE_BRANCH"
-          VERSION="${BRANCH#release-}"
+          if [[ "$BRANCH" == "main" ]]; then
+            VERSION="next"
+          else
+            VERSION="${BRANCH#release-}"
+          fi
 
           echo "Deploying release branch: $BRANCH"
           echo "Release version: $VERSION"
