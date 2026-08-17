@@ -9,6 +9,11 @@ permissions:
   id-token: write
   actions: read
 
+
+concurrency:
+  group: deploy-docs
+  queue: max
+
 jobs:
   find-releases:
     runs-on: ubuntu-latest
