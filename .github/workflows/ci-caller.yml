@@ -10,10 +10,9 @@ on:
       - main
       - "release-v*"
 
-# Only one deployment may modify gh-pages at a time.
-# Additional runs wait in GitHub's native queue.
+
 concurrency:
-  group: docs-deployment
+  group: deploy-docs
   queue: max
 
 permissions:
