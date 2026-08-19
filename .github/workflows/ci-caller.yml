@@ -9,8 +9,7 @@ on:
     branches:
       - main
       - "release-v*"
-
-
+  
 concurrency:
   group: deploy-docs
   queue: max
