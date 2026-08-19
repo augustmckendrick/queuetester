@@ -3,8 +3,7 @@ name: Rebuild All Release Docs to gh-pages
 on:
   workflow_dispatch:
 
-
- permissions:
+permissions:
   contents: write
   pages: write
   id-token: write
