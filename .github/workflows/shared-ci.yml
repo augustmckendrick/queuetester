@@ -9,11 +9,6 @@ on:
         type: string
         default: ""
 
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-  actions: read
 
 jobs:
   deploy:
