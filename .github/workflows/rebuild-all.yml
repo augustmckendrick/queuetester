@@ -3,12 +3,12 @@ name: Rebuild All Release Docs to gh-pages
 on:
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-  actions: read
 
+# permissions:
+#  contents: write
+#  pages: write
+#  id-token: write
+#  actions: read
 
 concurrency:
   group: deploy-docs
@@ -41,8 +41,11 @@ jobs:
               'refs/remotes/origin/release-v*' |
             sed 's#^origin/##' |
             jq -R -s -c '
-              split("\n")
-              | map(select(length > 0))
+              ["main"] +
+              (
+                split("\n")
+                | map(select(length > 0))
+              )
             '
           )"
 
