@@ -15,11 +15,6 @@ concurrency:
   group: deploy-docs
   queue: max
 
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-  actions: read
 
 jobs:
   ci:
