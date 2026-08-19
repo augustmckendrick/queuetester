@@ -9,6 +9,11 @@ on:
     branches:
       - main
       - "release-v*"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
   
 concurrency:
   group: deploy-docs
