@@ -1,5 +1,4 @@
-# Welcome to the {{{ docsVersionInfo.k0rdentName }}} documentation
-## Introductions
+# Welcome to the {{{ docsVersionInfo.k0rdentName }}} documentation MAIN
 
 {{{ docsVersionInfo.k0rdentName }}} has been developed to provide a way to manage distributed infrastructure
 at massive scale leveraging kubernetes.
