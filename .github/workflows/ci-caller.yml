@@ -16,11 +16,11 @@ concurrency:
   group: deploy-docs
   queue: max
 
-
 jobs:
   ci:
     uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
 
   publish-to-pages:
     needs: ci
+    if: needs.ci.outputs.skip != 'true'
     uses: augustmckendrick/queuetester/.github/workflows/deploy-pages.yml@main
