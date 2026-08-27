@@ -1,4 +1,4 @@
-# Welcome to the {{{ docsVersionInfo.k0rdentName }}} documentation
+# Welcome to the {{{ docsVersionInfo.k0rdentName }}} documentation 1.15.0
 ## Introductions
 
 {{{ docsVersionInfo.k0rdentName }}} has been developed to provide a way to manage distributed infrastructure
