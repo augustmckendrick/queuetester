@@ -23,4 +23,5 @@ jobs:
 
   publish-to-pages:
     needs: ci
+    if: needs.ci.outputs.skip != 'true'
     uses: augustmckendrick/queuetester/.github/workflows/deploy-pages.yml@main
