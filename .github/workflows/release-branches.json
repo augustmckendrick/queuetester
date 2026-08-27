@@ -4,7 +4,8 @@
     "aliases": []
   },
   "release-v1.19.0": {
-    "version": "v1.19.0 (latest)",
+    "version": "v1.19.0",
+    "title": "v1.19.0 (latest)",
     "aliases": ["stable", "latest"]
   },
   "release-v1.18.0": {

@@ -55,12 +55,14 @@ jobs:
 
           entry = branches[branch] or {}
           version = entry.get("version")
+          title = entry.get("title") or version
           aliases = entry.get("aliases") or []
 
           if not version:
               sys.exit(f"ERROR: '{branch}' in release-branches.json has no 'version' set.")
 
           print(f"version={version}")
+          print(f"title={title}")
           print(f"aliases={' '.join(aliases)}")
           PYEOF
 
@@ -103,14 +105,17 @@ jobs:
           set -euo pipefail
 
           VERSION="${{ steps.branch_config.outputs.version }}"
+          TITLE="${{ steps.branch_config.outputs.title }}"
           ALIASES="${{ steps.branch_config.outputs.aliases }}"
 
           echo "Deploying release branch: $SOURCE_BRANCH"
           echo "Release version: $VERSION"
+          echo "Release title: $TITLE"
           echo "Aliases: ${ALIASES:-(none)}"
 
           mike deploy \
-            --title "$VERSION" \
+            --title "$TITLE" \
+            --alias-type=redirect \
             --update-aliases \
             --push \
             "$VERSION" $ALIASES
