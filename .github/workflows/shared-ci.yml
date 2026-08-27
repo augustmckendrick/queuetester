@@ -115,6 +115,17 @@ jobs:
             --push \
             "$VERSION" $ALIASES
 
+      - name: Set default version to latest
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if mike list latest >/dev/null 2>&1; then
+            mike set-default latest --push
+          else
+            echo "No 'latest' alias deployed yet; skipping default version update."
+          fi
+
       - name: Report completion
         shell: bash
         run: |
