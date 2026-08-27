@@ -1,13 +1,19 @@
 # .github/workflows/release-new-version.yml
 
 # Cuts a new release branch from main:
-#   1. Branches main into a new release branch (named via mkdocs.yml's
+#   1. Registers the new branch in release-branches.json on main and
+#      promotes it to the "stable"/"latest" version (named via mkdocs.yml's
 #      extra.docsVersionInfo.releaseBranchName).
-#   2. Registers that branch in release-branches.json on main and promotes
-#      it to the "stable"/"latest" version.
-#   3. Strips every workflow file from the new branch except ci-caller.yml,
-#      since the release branch delegates its CI back to main.
-#   4. Runs shared-ci.yml for the new branch to publish its docs immediately.
+#   2. Branches main into that new release branch, stripping every workflow
+#      file except ci-caller.yml (the release branch delegates its CI back
+#      to main).
+#
+# main is updated *before* the release branch is pushed so that when the
+# branch's own push triggers ci-caller.yml -> shared-ci.yml, it already
+# finds itself listed in release-branches.json and deploys immediately --
+# no separate explicit deploy job needed. Each of these two pushes is a
+# single commit, so each triggers exactly one downstream CI run instead of
+# racing multiple runs against the same GitHub Pages deployment.
 name: Release new version
 
 on:
@@ -25,10 +31,6 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
-
-    outputs:
-      branch: ${{ steps.release_info.outputs.branch }}
-      version: ${{ steps.release_info.outputs.version }}
 
     steps:
       - name: Checkout main
@@ -72,29 +74,6 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Releasing $VERSION on branch $RELEASE_BRANCH"
 
-      - name: Create release branch from main
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          git checkout -b "${{ steps.release_info.outputs.branch }}"
-          git push origin "${{ steps.release_info.outputs.branch }}"
-
-      - name: Prune workflow files on release branch
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          find .github/workflows -maxdepth 1 -type f ! -name 'ci-caller.yml' -delete
-
-          git add .github/workflows
-          if git diff --cached --quiet; then
-            echo "No workflow files to prune."
-          else
-            git commit -m "Prune shared workflow files from ${{ steps.release_info.outputs.branch }}"
-            git push origin "${{ steps.release_info.outputs.branch }}"
-          fi
-
       - name: Add release to release-branches.json on main
         shell: bash
         env:
@@ -102,8 +81,6 @@ jobs:
           VERSION: ${{ steps.release_info.outputs.version }}
         run: |
           set -euo pipefail
-
-          git checkout main
 
           python3 - <<'PYEOF'
           import json
@@ -140,15 +117,16 @@ jobs:
           git commit -m "Add $RELEASE_BRANCH to release-branches.json and promote to stable/latest"
           git push origin main
 
-  deploy:
-    needs: release
-    uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
-    with:
-      branch: ${{ needs.release.outputs.branch }}
-    secrets: inherit
+      - name: Cut release branch from main
+        shell: bash
+        env:
+          RELEASE_BRANCH: ${{ steps.release_info.outputs.branch }}
+        run: |
+          set -euo pipefail
 
-  publish-to-pages:
-    needs: deploy
-    if: needs.deploy.outputs.skip != 'true'
-    uses: augustmckendrick/queuetester/.github/workflows/deploy-pages.yml@main
-    secrets: inherit
+          git checkout -b "$RELEASE_BRANCH"
+          find .github/workflows -maxdepth 1 -type f ! -name 'ci-caller.yml' -delete
+
+          git add .github/workflows
+          git commit -m "Cut $RELEASE_BRANCH from main"
+          git push origin "$RELEASE_BRANCH"
