@@ -15,7 +15,6 @@ on:
 
 permissions:
   contents: write
-  workflows: write
   pages: write
   id-token: write
 
@@ -37,6 +36,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+          token: ${{ secrets.RELEASE_PAT }}
 
       - name: Set up Python
         uses: actions/setup-python@v6
