@@ -1,7 +1,7 @@
 {
   "main": {
     "version": "next",
-    "aliases": ["main"]
+    "aliases": []
   },
   "release-v1.19.0": {
     "version": "v1.19.0",
