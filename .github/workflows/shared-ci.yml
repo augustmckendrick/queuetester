@@ -58,7 +58,7 @@ jobs:
 
           if branch not in branches:
               valid = ", ".join(sorted(branches)) or "(none defined)"
-              print(f"::notice::'{branch}' is not listed in release-branches.json (valid branches: {valid}); skipping deploy.")
+              print(f"::notice::'{branch}' is not listed in release-branches.json (valid branches: {valid}); skipping deploy.", file=sys.stderr)
               print("skip=true")
               sys.exit(0)
 
