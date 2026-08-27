@@ -1,0 +1,153 @@
+# .github/workflows/release-new-version.yml
+
+# Cuts a new release branch from main:
+#   1. Branches main into a new release branch (named via mkdocs.yml's
+#      extra.docsVersionInfo.releaseBranchName).
+#   2. Registers that branch in release-branches.json on main and promotes
+#      it to the "stable"/"latest" version.
+#   3. Strips every workflow file from the new branch except ci-caller.yml,
+#      since the release branch delegates its CI back to main.
+#   4. Runs shared-ci.yml for the new branch to publish its docs immediately.
+name: Release new version
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: deploy-docs
+  queue: max
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    outputs:
+      branch: ${{ steps.release_info.outputs.branch }}
+      version: ${{ steps.release_info.outputs.version }}
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Configure Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Determine release branch
+        id: release_info
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          RELEASE_BRANCH=$(sed -n 's/^[[:space:]]*releaseBranchName:[[:space:]]*//p' mkdocs.yml | head -n1)
+
+          if [[ -z "$RELEASE_BRANCH" ]]; then
+            echo "ERROR: could not find extra.docsVersionInfo.releaseBranchName in mkdocs.yml" >&2
+            exit 1
+          fi
+
+          if git ls-remote --exit-code --heads origin "$RELEASE_BRANCH" >/dev/null 2>&1; then
+            echo "ERROR: branch '$RELEASE_BRANCH' already exists on origin." >&2
+            exit 1
+          fi
+
+          VERSION="${RELEASE_BRANCH#release-}"
+
+          echo "branch=$RELEASE_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Releasing $VERSION on branch $RELEASE_BRANCH"
+
+      - name: Create release branch from main
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git checkout -b "${{ steps.release_info.outputs.branch }}"
+          git push origin "${{ steps.release_info.outputs.branch }}"
+
+      - name: Prune workflow files on release branch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          find .github/workflows -maxdepth 1 -type f ! -name 'ci-caller.yml' -delete
+
+          git add .github/workflows
+          if git diff --cached --quiet; then
+            echo "No workflow files to prune."
+          else
+            git commit -m "Prune shared workflow files from ${{ steps.release_info.outputs.branch }}"
+            git push origin "${{ steps.release_info.outputs.branch }}"
+          fi
+
+      - name: Add release to release-branches.json on main
+        shell: bash
+        env:
+          RELEASE_BRANCH: ${{ steps.release_info.outputs.branch }}
+          VERSION: ${{ steps.release_info.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          git checkout main
+
+          python3 - <<'PYEOF'
+          import json
+          import os
+
+          path = ".github/workflows/release-branches.json"
+          release_branch = os.environ["RELEASE_BRANCH"]
+          version = os.environ["VERSION"]
+
+          with open(path) as f:
+              data = json.load(f)
+
+          if release_branch in data:
+              raise SystemExit(f"ERROR: '{release_branch}' is already present in release-branches.json")
+
+          for entry in data.values():
+              aliases = entry.get("aliases") or []
+              if "stable" in aliases or "latest" in aliases:
+                  entry["aliases"] = [a for a in aliases if a not in ("stable", "latest")]
+                  entry.pop("title", None)
+
+          data[release_branch] = {
+              "version": version,
+              "title": f"{version} (latest)",
+              "aliases": ["stable", "latest"],
+          }
+
+          with open(path, "w") as f:
+              json.dump(data, f, indent=2)
+              f.write("\n")
+          PYEOF
+
+          git add .github/workflows/release-branches.json
+          git commit -m "Add $RELEASE_BRANCH to release-branches.json and promote to stable/latest"
+          git push origin main
+
+  deploy:
+    needs: release
+    uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
+    with:
+      branch: ${{ needs.release.outputs.branch }}
+    secrets: inherit
+
+  publish-to-pages:
+    needs: deploy
+    if: needs.deploy.outputs.skip != 'true'
+    uses: augustmckendrick/queuetester/.github/workflows/deploy-pages.yml@main
+    secrets: inherit
