@@ -1,11 +1,11 @@
 {
   "main": {
     "version": "next",
-    "aliases": ["latest"]
+    "aliases": []
   },
   "release-v1.19.0": {
-    "version": "v1.19.0",
-    "aliases": ["stable"]
+    "version": "v1.19.0 (latest)",
+    "aliases": ["stable", "latest"]
   },
   "release-v1.18.0": {
     "version": "v1.18.0",
