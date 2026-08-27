@@ -6,27 +6,21 @@ name: CI Caller
 
 on:
   push:
-    branches:
-      - main
-      - "release-v*"
-
-
-concurrency:
-  group: deploy-docs
-  queue: max
 
 permissions:
   contents: write
   pages: write
   id-token: write
-  actions: read
+  
+concurrency:
+  group: deploy-docs
+  queue: max
+
 
 jobs:
   ci:
     uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
-    secrets: inherit
 
   publish-to-pages:
     needs: ci
     uses: augustmckendrick/queuetester/.github/workflows/deploy-pages.yml@main
-    secrets: inherit
