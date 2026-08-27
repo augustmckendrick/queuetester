@@ -6,9 +6,6 @@ name: CI Caller
 
 on:
   push:
-    branches:
-      - main
-      - "release-v*"
 
 permissions:
   contents: write

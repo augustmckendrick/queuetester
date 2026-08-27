@@ -21,37 +21,36 @@ jobs:
       branches: ${{ steps.branches.outputs.branches }}
 
     steps:
-      - name: Checkout repository
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+          cache: pip
+
+      - name: Checkout branch config
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          sparse-checkout: |
+            .github/workflows/release-branches.json
+          sparse-checkout-cone-mode: false
 
-      - name: Find release branches
+      - name: List branches from release-branches.json
         id: branches
         shell: bash
         run: |
           set -euo pipefail
 
-          git fetch origin
+          python3 - <<'PYEOF' >> "$GITHUB_OUTPUT"
+          import json
 
-          BRANCHES="$(
-            git for-each-ref \
-              --format='%(refname:short)' \
-              'refs/remotes/origin/release-v*' |
-            sed 's#^origin/##' |
-            jq -R -s -c '
-              ["main"] +
-              (
-                split("\n")
-                | map(select(length > 0))
-              )
-            '
-          )"
+          with open(".github/workflows/release-branches.json") as f:
+              branches = json.load(f) or {}
+
+          print("branches=" + json.dumps(list(branches)))
+          PYEOF
 
           echo "Release branches:"
-          echo "$BRANCHES"
-
-          echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
 
   deploy:
     needs: find-releases

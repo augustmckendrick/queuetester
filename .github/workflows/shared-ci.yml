@@ -20,19 +20,53 @@ jobs:
       SOURCE_BRANCH: ${{ inputs.branch || github.ref_name }}
 
     steps:
-      - name: Validate branch name
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+          cache: pip
+
+      - name: Checkout branch config from main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          sparse-checkout: |
+            .github/workflows/release-branches.json
+          sparse-checkout-cone-mode: false
+          path: branch-config
+
+      - name: Resolve branch configuration
+        id: branch_config
         shell: bash
         run: |
           set -euo pipefail
 
-          BRANCH="$SOURCE_BRANCH"
+          python3 - "$SOURCE_BRANCH" <<'PYEOF' >> "$GITHUB_OUTPUT"
+          import json
+          import sys
 
-          if ! [[ "$BRANCH" =~ ^(main|release-v[0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
-            echo "ERROR: '$BRANCH' is not main or a valid release-vX.Y.Z branch."
-            exit 1
-          fi
+          branch = sys.argv[1]
 
-          echo "Deploying documentation from branch: $BRANCH"
+          with open("branch-config/.github/workflows/release-branches.json") as f:
+              branches = json.load(f) or {}
+
+          if branch not in branches:
+              valid = ", ".join(sorted(branches)) or "(none defined)"
+              sys.exit(f"ERROR: '{branch}' is not listed in release-branches.json. Valid branches: {valid}")
+          else
+              entry = branches[branch] or {}
+              version = entry.get("version")
+              aliases = entry.get("aliases") or []
+          }
+
+          if not version:
+              sys.exit(f"ERROR: '{branch}' in release-branches.json has no 'version' set.")
+
+          print(f"version={version}")
+          print(f"aliases={' '.join(aliases)}")
+          PYEOF
+
+          echo "Deploying documentation from branch: $SOURCE_BRANCH"
 
       - name: Checkout source branch
         uses: actions/checkout@v6
@@ -44,12 +78,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.x"
-          cache: pip
 
       - name: Install dependencies
         shell: bash
@@ -76,24 +104,19 @@ jobs:
         run: |
           set -euo pipefail
 
-          BRANCH="$SOURCE_BRANCH"
-          if [[ "$BRANCH" == "main" ]]; then
-            VERSION="next"
-          else
-            VERSION="${BRANCH#release-}"
-          fi
+          VERSION="${{ steps.branch_config.outputs.version }}"
+          ALIASES="${{ steps.branch_config.outputs.aliases }}"
 
-          echo "Deploying release branch: $BRANCH"
+          echo "Deploying release branch: $SOURCE_BRANCH"
           echo "Release version: $VERSION"
-
-          echo "Deploying $BRANCH as $VERSION"
+          echo "Aliases: ${ALIASES:-(none)}"
 
           mike deploy \
             --title "$VERSION" \
             --update-aliases \
             --push \
-            "$VERSION"
-            
+            "$VERSION" $ALIASES
+
       - name: Report completion
         shell: bash
         run: |
