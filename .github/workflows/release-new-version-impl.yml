@@ -1,32 +1,28 @@
-# .github/workflows/release-new-version.yml
+# .github/workflows/release-new-version-impl.yml
 
-# Cuts a new release branch from main:
-#   1. Registers the new branch in release-branches.json on main and
-#      promotes it to the "stable"/"latest" version (named via mkdocs.yml's
-#      extra.docsVersionInfo.releaseBranchName).
-#   2. Branches main into that new release branch, stripping every workflow
-#      file except ci-caller.yml (the release branch delegates its CI back
-#      to main).
+# Real implementation, lives only on the ciworkflows branch. main carries a
+# thin workflow_dispatch stub (release-new-version.yml) that calls this via
+# `uses:`, since GitHub only allows workflow_dispatch to be triggered from
+# workflow files present on the default branch.
 #
-# main is updated *before* the release branch is pushed so that when the
-# branch's own push triggers ci-caller.yml -> shared-ci.yml, it already
-# finds itself listed in release-branches.json and deploys immediately --
-# no separate explicit deploy job needed. Each of these two pushes is a
-# single commit, so each triggers exactly one downstream CI run instead of
-# racing multiple runs against the same GitHub Pages deployment.
+# Cuts a new release branch from main:
+#   1. Registers the new branch in release-branches.json on ciworkflows and
+#      promotes it to the "stable"/"latest" version (named via main's
+#      mkdocs.yml's extra.docsVersionInfo.releaseBranchName).
+#   2. Branches main into that new release branch, stripping every workflow
+#      file except ci-caller.yml (the release branch delegates its CI to
+#      ciworkflows).
+#
+# release-branches.json is updated *before* the release branch is pushed so
+# that when the branch's own push triggers ci-caller.yml -> shared-ci.yml, it
+# already finds itself listed in release-branches.json and deploys
+# immediately -- no separate explicit deploy job needed. Each of these two
+# pushes is a single commit, so each triggers exactly one downstream CI run
+# instead of racing multiple runs against the same GitHub Pages deployment.
 name: Release new version
 
 on:
-  workflow_dispatch:
-
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
-concurrency:
-  group: deploy-docs
-  queue: max
+  workflow_call:
 
 jobs:
   release:
@@ -39,6 +35,15 @@ jobs:
           ref: main
           fetch-depth: 0
           token: ${{ secrets.RELEASE_PAT }}
+          path: main
+
+      - name: Checkout ciworkflows
+        uses: actions/checkout@v6
+        with:
+          ref: ciworkflows
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PAT }}
+          path: ciworkflows
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -47,12 +52,13 @@ jobs:
 
       - name: Configure Git identity
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Determine release branch
         id: release_info
         shell: bash
+        working-directory: main
         run: |
           set -euo pipefail
 
@@ -74,8 +80,9 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Releasing $VERSION on branch $RELEASE_BRANCH"
 
-      - name: Add release to release-branches.json on main
+      - name: Add release to release-branches.json on ciworkflows
         shell: bash
+        working-directory: ciworkflows
         env:
           RELEASE_BRANCH: ${{ steps.release_info.outputs.branch }}
           VERSION: ${{ steps.release_info.outputs.version }}
@@ -115,10 +122,11 @@ jobs:
 
           git add .github/workflows/release-branches.json
           git commit -m "Add $RELEASE_BRANCH to release-branches.json and promote to stable/latest"
-          git push origin main
+          git push origin ciworkflows
 
       - name: Cut release branch from main
         shell: bash
+        working-directory: main
         env:
           RELEASE_BRANCH: ${{ steps.release_info.outputs.branch }}
         run: |

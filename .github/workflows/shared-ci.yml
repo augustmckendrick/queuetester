@@ -32,10 +32,10 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Checkout branch config from main
+      - name: Checkout branch config from ciworkflows
         uses: actions/checkout@v6
         with:
-          ref: main
+          ref: ciworkflows
           sparse-checkout: |
             .github/workflows/release-branches.json
           sparse-checkout-cone-mode: false
