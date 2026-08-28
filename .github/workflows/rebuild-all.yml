@@ -1,3 +1,10 @@
+# .github/workflows/rebuild-all.yml
+
+# Thin trigger stub: the real logic lives in rebuild-all-impl.yml on the
+# ciworkflows branch (all CI/release assets live there; main only keeps the
+# ci-caller.yml delegator and workflow_dispatch stubs like this one, since
+# GitHub only lets workflow_dispatch workflows be triggered from workflow
+# files present on the default branch).
 name: Rebuild All Release Docs to gh-pages
 
 on:
@@ -14,60 +21,6 @@ concurrency:
   queue: max
 
 jobs:
-  find-releases:
-    runs-on: ubuntu-latest
-
-    outputs:
-      branches: ${{ steps.branches.outputs.branches }}
-
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.x"
-
-      - name: Checkout branch config
-        uses: actions/checkout@v6
-        with:
-          sparse-checkout: |
-            .github/workflows/release-branches.json
-          sparse-checkout-cone-mode: false
-
-      - name: List branches from release-branches.json
-        id: branches
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          python3 - <<'PYEOF' >> "$GITHUB_OUTPUT"
-          import json
-
-          with open(".github/workflows/release-branches.json") as f:
-              branches = json.load(f) or {}
-
-          print("branches=" + json.dumps(list(branches)))
-          PYEOF
-
-          echo "Release branches:"
-          cat "$GITHUB_OUTPUT"
-
-  deploy:
-    needs: find-releases
-
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        branch: ${{ fromJSON(needs.find-releases.outputs.branches) }}
-
-    uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
-
-    with:
-      branch: ${{ matrix.branch }}
-
-    secrets: inherit
-
-  publish-to-pages:
-    needs: deploy
-    uses: augustmckendrick/queuetester/.github/workflows/deploy-pages.yml@main
+  rebuild-all:
+    uses: augustmckendrick/queuetester/.github/workflows/rebuild-all-impl.yml@ciworkflows
     secrets: inherit

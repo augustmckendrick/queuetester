@@ -1,7 +1,7 @@
 # .github/workflows/ci-caller.yml
 
 # This workflow exists in all release branches and calls the actual CI workflow that lives in the
-# main branch. This enables us to manage the actual CI workflow in one place.
+# ciworkflows branch. This enables us to manage the actual CI workflow in one place.
 name: CI Caller
 
 on:
@@ -19,9 +19,9 @@ concurrency:
 
 jobs:
   ci:
-    uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@main
+    uses: augustmckendrick/queuetester/.github/workflows/shared-ci.yml@ciworkflows
 
   publish-to-pages:
     needs: ci
     if: needs.ci.outputs.skip != 'true'
-    uses: augustmckendrick/queuetester/.github/workflows/deploy-pages.yml@main
+    uses: augustmckendrick/queuetester/.github/workflows/deploy-pages.yml@ciworkflows
