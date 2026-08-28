@@ -53,7 +53,11 @@
   },
   "release-v1.20.2": {
     "version": "v1.20.2",
-    "title": "v1.20.2 (latest)",
+    "aliases": []
+  },
+  "release-v1.20.3": {
+    "version": "v1.20.3",
+    "title": "v1.20.3 (latest)",
     "aliases": [
       "stable",
       "latest"
