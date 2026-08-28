@@ -81,6 +81,7 @@ jobs:
           echo "Releasing $VERSION on branch $RELEASE_BRANCH"
 
       - name: Add release to release-branches.json on ciworkflows
+        id: bump_json
         shell: bash
         working-directory: ciworkflows
         env:
@@ -103,11 +104,13 @@ jobs:
           if release_branch in data:
               raise SystemExit(f"ERROR: '{release_branch}' is already present in release-branches.json")
 
+          demoted_versions = []
           for entry in data.values():
               aliases = entry.get("aliases") or []
               if "stable" in aliases or "latest" in aliases:
                   entry["aliases"] = [a for a in aliases if a not in ("stable", "latest")]
                   entry.pop("title", None)
+                  demoted_versions.append(entry["version"])
 
           data[release_branch] = {
               "version": version,
@@ -118,11 +121,45 @@ jobs:
           with open(path, "w") as f:
               json.dump(data, f, indent=2)
               f.write("\n")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write("demoted_versions=" + " ".join(demoted_versions) + "\n")
           PYEOF
 
           git add .github/workflows/release-branches.json
           git commit -m "Add $RELEASE_BRANCH to release-branches.json and promote to stable/latest"
           git push origin ciworkflows
+
+      - name: Install docs dependencies
+        if: steps.bump_json.outputs.demoted_versions != ''
+        shell: bash
+        working-directory: main
+        run: |
+          set -euo pipefail
+
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Retitle demoted version(s) in versions.json
+        # release-branches.json is our own bookkeeping; it's not what drives
+        # the version dropdown on the published site. That's versions.json,
+        # which mike maintains on gh-pages and only touches for the version
+        # it's actively deploying. So the old "latest" version's docs never
+        # get rebuilt here, but mike still needs telling to drop the
+        # "(latest)" suffix from its title -- otherwise the site keeps
+        # showing two versions labeled latest until the next full rebuild.
+        if: steps.bump_json.outputs.demoted_versions != ''
+        shell: bash
+        working-directory: main
+        env:
+          DEMOTED_VERSIONS: ${{ steps.bump_json.outputs.demoted_versions }}
+        run: |
+          set -euo pipefail
+
+          for v in $DEMOTED_VERSIONS; do
+            echo "Retitling $v to drop its (latest) title in versions.json"
+            mike retitle "$v" "$v" --push
+          done
 
       - name: Cut release branch from main
         shell: bash
