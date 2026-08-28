@@ -375,10 +375,10 @@ extra:
             Thanks for your feedback! Help us improve this page by
             using our <a href="https://github.com/k0rdent/docs/issues/new" target="_blank" rel="noopener">feedback form</a>.
   docsVersionInfo:
-    releaseBranchName: release-v1.20.0
+    releaseBranchName: release-v1.20.1
     k0rdentName: k0rdent
-    k0rdentVersion: 1-20-0
-    k0rdentDotVersion: 1.20.0
+    k0rdentVersion: 1-20-1
+    k0rdentDotVersion: 1.20.1
     ociRegistry: oci://ghcr.io/k0rdent/kcm/charts/kcm
     k0rdentDigestValue: sha256:1deee5fee83c4c01547e12b77d122ae6420ad91b563556d97916d829c1b583ac
     k0rdentDigestDate: Tue Jun 8 16:22:42 2026
