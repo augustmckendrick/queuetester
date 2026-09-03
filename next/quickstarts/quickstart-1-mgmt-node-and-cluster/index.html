@@ -5641,9 +5641,9 @@ chmod<span class="w"> </span><span class="m">700</span><span class="w"> </span>g
 </code></pre></div>
 <h2 id="install-k0rdent">Install k0rdent<a class="headerlink" href="#install-k0rdent" title="Permanent link">#</a></h2>
 <p>Now we'll install k0rdent itself into the k0s management cluster:</p>
-<p><div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>kcm<span class="w"> </span>oci://ghcr.io/k0rdent/kcm/charts/kcm<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.21.1<span class="w"> </span>-n<span class="w"> </span>kcm-system<span class="w"> </span>--create-namespace
+<p><div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>kcm<span class="w"> </span>oci://ghcr.io/k0rdent/kcm/charts/kcm<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.21.2<span class="w"> </span>-n<span class="w"> </span>kcm-system<span class="w"> </span>--create-namespace
 </code></pre></div>
-<div class="no-copy highlight"><pre><span></span><code><span class="go">Pulled: ghcr.io/k0rdent/kcm/charts/kcm:1.21.1</span>
+<div class="no-copy highlight"><pre><span></span><code><span class="go">Pulled: ghcr.io/k0rdent/kcm/charts/kcm:1.21.2</span>
 <span class="go">Digest: sha256:1deee5fee83c4c01547e12b77d122ae6420ad91b563556d97916d829c1b583ac</span>
 <span class="go">NAME: kcm</span>
 <span class="go">LAST DEPLOYED: Tue Jun 8 16:22:42 2026</span>
@@ -5712,7 +5712,7 @@ chmod<span class="w"> </span><span class="m">700</span><span class="w"> </span>g
 <p><div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>Management<span class="w"> </span>-n<span class="w"> </span>kcm-system
 </code></pre></div>
 <div class="no-copy highlight"><pre><span></span><code><span class="go">NAME   READY   RELEASE     AGE</span>
-<span class="go">kcm    True    kcm-1-21-1   9m</span>
+<span class="go">kcm    True    kcm-1-21-2   9m</span>
 </code></pre></div></p>
 <h2 id="verify-that-kcm-provider-and-related-templates-are-available">Verify that KCM provider and related templates are available<a class="headerlink" href="#verify-that-kcm-provider-and-related-templates-are-available" title="Permanent link">#</a></h2>
 <p>k0rdent KCM leverages CAPI to manage Kubernetes cluster assembly and host infrastructure. CAPI requires infrastructure providers for different clouds and infrastructure types. These are delivered and referenced within k0rdent using templates, instantiated in the management cluster as objects. Before continuing, verify that the default provider template objects are installed and verified. Other templates are also stored as provider templates in this namespace (for example, the templates that determine setup of KCM itself and other parts of the k0rdent system, such as projectsveltos, which is a component of k0rdent State Manager (KSM, see below)) as well as the k0smotron subsystem, which enables creation and lifecycle management of managed clusters that use Kubernetes-hosted control planes (such as control planes as pods):</p>
@@ -5730,7 +5730,7 @@ chmod<span class="w"> </span><span class="m">700</span><span class="w"> </span>g
 <span class="go">cluster-api-provider-k0sproject-k0smotron-1-0-32  true</span>
 <span class="go">cluster-api-provider-openstack-1-0-28             true</span>
 <span class="go">cluster-api-provider-vsphere-1-0-21               true</span>
-<span class="go">kcm-1-21-1                                         true</span>
+<span class="go">kcm-1-21-2                                         true</span>
 <span class="go">kcm-regional-1-11-0                               true</span>
 <span class="go">projectsveltos-1-12-1                              true</span>
 </code></pre></div>
