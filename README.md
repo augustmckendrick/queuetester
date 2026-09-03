@@ -10,7 +10,7 @@ from the branch gh-pages.
 
 Development is tracked under [k0rdent](https://github.com/orgs/k0rdent/projects/4) on github.
 
-The k0rdent org is:
+The k0rdent org is: 
 
 - [k0rdent](https://github.com/k0rdent)
 
