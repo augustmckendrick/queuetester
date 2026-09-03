@@ -1,6 +1,6 @@
 # Administering {{{ docsVersionInfo.k0rdentName }}}
 
-Before you start working with {{{ docsVersionInfo.k0rdentName }}}, it helps to understand a few basics.
+Before you start working with {{{ docsVersionInfo.k0rdentName }}}, it helps to understand a few basics. 
 
 ## How {{{ docsVersionInfo.k0rdentName }}} works
 
